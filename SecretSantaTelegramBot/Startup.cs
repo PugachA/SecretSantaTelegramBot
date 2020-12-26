@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Ngrok.AspNetCore;
 using SecretSantaTelegramBot.Services;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,19 @@ namespace SecretSantaTelegramBot
             services.AddNgrok();
 
             services.AddControllers().AddNewtonsoftJson();
+
+            services.AddDbContext<SecretSantaContext>(
+                    options => options.UseSqlServer(
+                        Configuration.GetConnectionString("DefaultConnection"),
+                        sqlServerOptionsAction: sqlOptions =>
+                        {
+                            sqlOptions.EnableRetryOnFailure(
+                                maxRetryCount: 5,
+                                maxRetryDelay: TimeSpan.FromSeconds(10),
+                                errorNumbersToAdd: null);
+                        }),
+                    ServiceLifetime.Transient,
+                    ServiceLifetime.Transient);
 
             services.AddSwaggerGen(c =>
             {
