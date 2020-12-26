@@ -17,16 +17,15 @@ namespace Cryptography.Wrappers.Certificates
             get => _thumbprint;
             set
             {
-                if (string.IsNullOrEmpty(value))
-                    throw new ArgumentNullException($"{nameof(Thumbprint)} can not be null or empty");
-
-                _thumbprint = Transform(value);
+                _thumbprint = Transform(value.StringNullOrEmptyValidate(nameof(Thumbprint)));
             }
         }
 
         public StoreLocation Location { get; set; }
 
         public StoreName StoreName { get; set; }
+
+        public ThumbprintCertificateInfo() { }
 
         public ThumbprintCertificateInfo(string thumbprint, StoreLocation location = StoreLocation.CurrentUser, StoreName storeName = StoreName.My)
         {
