@@ -1,7 +1,10 @@
+using Cryptography.Wrappers;
+using Cryptography.Wrappers.Certificates;
 using Microsoft.Extensions.Options;
 using MihaZupan;
 using Ngrok.AspNetCore;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 
@@ -9,17 +12,18 @@ namespace SecretSantaTelegramBot.Services
 {
     public class TelegramBotService : ITelegramBotService
     {
-        private readonly BotConfiguration _config;
+        private readonly BotConfiguration _botConfiguration;
         public TelegramBotClient TelegramBotClient { get; }
 
-        public TelegramBotService(INgrokHostedService ngrokHostedService, IOptions<BotConfiguration> config)
+        public TelegramBotService(INgrokHostedService ngrokHostedService, IEncryptor encryptor, IOptions<BotConfiguration> botConfiguration)
         {
-            _config = config.Value;
+            _botConfiguration = botConfiguration.Value;
+            var token = encryptor.DecryptStringFromBase64String(_botConfiguration.BotToken, Encoding.UTF8);
 
-            TelegramBotClient = new TelegramBotClient(_config.BotToken);
+            TelegramBotClient = new TelegramBotClient(token);
 
-            if (!string.IsNullOrEmpty(_config.Socks5Host))
-                TelegramBotClient = new TelegramBotClient(_config.BotToken, new HttpToSocks5Proxy(_config.Socks5Host, _config.Socks5Port));
+            if (!string.IsNullOrEmpty(_botConfiguration.Socks5Host))
+                TelegramBotClient = new TelegramBotClient(token, new HttpToSocks5Proxy(_botConfiguration.Socks5Host, _botConfiguration.Socks5Port));
 
             var httpsTunnel = ngrokHostedService.GetTunnelsAsync().Result.Single(t => t.Proto == "https");
             TelegramBotClient.SetWebhookAsync($"{httpsTunnel.PublicURL}/api/update").Wait();

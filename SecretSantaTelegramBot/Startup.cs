@@ -1,3 +1,5 @@
+using Cryptography.Wrappers;
+using Cryptography.Wrappers.Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -31,7 +33,9 @@ namespace SecretSantaTelegramBot
         {
             services.AddScoped<IUpdateService, UpdateService>();
             services.AddSingleton<ITelegramBotService, TelegramBotService>();
+            services.AddSingleton<IEncryptor, EncryptorService>();
             services.Configure<BotConfiguration>(Configuration.GetSection("BotConfiguration"));
+            services.Configure<ThumbprintCertificateInfo>(Configuration.GetSection("ThumbprintCertificateInfo"));
             services.AddNgrok();
 
             services.AddControllers().AddNewtonsoftJson();
