@@ -13,6 +13,7 @@ namespace SecretSantaTelegramBot
         public DbSet<SecretSantaGame> Games { get; set; }
         public DbSet<Draw> Draws { get; set; }
         public DbSet<Participant> Participants { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         public SecretSantaContext(DbContextOptions options) : base(options)
         {

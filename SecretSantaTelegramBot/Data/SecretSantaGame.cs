@@ -27,5 +27,7 @@ namespace SecretSantaTelegramBot.Data
         public List<Participant> Participants { get; set; }
         [JsonIgnore]
         public List<Draw> Draws { get; set; }
+        [JsonIgnore]
+        public List<Notification> Notifications { get; set; }
     }
 }
