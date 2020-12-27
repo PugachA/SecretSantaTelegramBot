@@ -29,6 +29,7 @@ namespace SecretSantaTelegramBot
                 .CreateLogger();
             try
             {
+
                 Log.Information("Application Starting.");
 
                 CreateHostBuilder(args).Build().Run();

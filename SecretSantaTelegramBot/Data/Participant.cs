@@ -12,13 +12,13 @@ namespace SecretSantaTelegramBot.Data
         public int Id { get; set; }
 
         [JsonIgnore]
-        public Game Game { get; set; }
+        public SecretSantaGame Game { get; set; }
 
         [ForeignKey(nameof(Game))]
         public int GameId { get; set; }
 
         [JsonIgnore]
-        public User User { get; set; }
+        public SecretSantaUser User { get; set; }
 
         [ForeignKey(nameof(User))]
         public int UserId { get; set; }

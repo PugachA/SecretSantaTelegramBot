@@ -5,6 +5,6 @@ namespace SecretSantaTelegramBot.Services
 {
     public interface IUpdateService
     {
-        Task EchoAsync(Update update);
+        Task GenerateAnswerAsync(Update update);
     }
 }

@@ -3,6 +3,8 @@ using Cryptography.Wrappers.Certificates;
 using Microsoft.Extensions.Options;
 using MihaZupan;
 using Ngrok.AspNetCore;
+using SecretSantaTelegramBot.Models.Commands;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +16,7 @@ namespace SecretSantaTelegramBot.Services
     {
         private readonly BotConfiguration _botConfiguration;
         public TelegramBotClient TelegramBotClient { get; }
+        public IReadOnlyList<ICommand> Commands { get; }
 
         public TelegramBotService(INgrokHostedService ngrokHostedService, IEncryptor encryptor, IOptions<BotConfiguration> botConfiguration)
         {
@@ -27,6 +30,15 @@ namespace SecretSantaTelegramBot.Services
 
             var httpsTunnel = ngrokHostedService.GetTunnelsAsync().Result.Single(t => t.Proto == "https");
             TelegramBotClient.SetWebhookAsync($"{httpsTunnel.PublicURL}/api/update").Wait();
+
+            Commands = GetCommands().AsReadOnly();
         }
+
+        private List<ICommand> GetCommands() => new List<ICommand>
+        { 
+            new StartCommand(),
+            new PlayCommand(),
+            new StickerCommand()
+        };
     }
 }

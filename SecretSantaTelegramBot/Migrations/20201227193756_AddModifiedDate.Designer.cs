@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SecretSantaTelegramBot;
 
 namespace SecretSantaTelegramBot.Migrations
 {
     [DbContext(typeof(SecretSantaContext))]
-    partial class SecretSantaContextModelSnapshot : ModelSnapshot
+    [Migration("20201227193756_AddModifiedDate")]
+    partial class AddModifiedDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,6 +46,30 @@ namespace SecretSantaTelegramBot.Migrations
                     b.ToTable("Draws");
                 });
 
+            modelBuilder.Entity("SecretSantaTelegramBot.Data.Game", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsEnded")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Games");
+                });
+
             modelBuilder.Entity("SecretSantaTelegramBot.Data.Participant", b =>
                 {
                     b.Property<int>("Id")
@@ -66,32 +92,7 @@ namespace SecretSantaTelegramBot.Migrations
                     b.ToTable("Participants");
                 });
 
-            modelBuilder.Entity("SecretSantaTelegramBot.Data.SecretSantaGame", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsEnded")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Games");
-                });
-
-            modelBuilder.Entity("SecretSantaTelegramBot.Data.SecretSantaUser", b =>
+            modelBuilder.Entity("SecretSantaTelegramBot.Data.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,13 +121,13 @@ namespace SecretSantaTelegramBot.Migrations
 
             modelBuilder.Entity("SecretSantaTelegramBot.Data.Draw", b =>
                 {
-                    b.HasOne("SecretSantaTelegramBot.Data.SecretSantaGame", "Game")
+                    b.HasOne("SecretSantaTelegramBot.Data.Game", "Game")
                         .WithMany("Draws")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SecretSantaTelegramBot.Data.SecretSantaUser", "GivingUser")
+                    b.HasOne("SecretSantaTelegramBot.Data.User", "GivingUser")
                         .WithMany()
                         .HasForeignKey("GivingUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -139,13 +140,13 @@ namespace SecretSantaTelegramBot.Migrations
 
             modelBuilder.Entity("SecretSantaTelegramBot.Data.Participant", b =>
                 {
-                    b.HasOne("SecretSantaTelegramBot.Data.SecretSantaGame", "Game")
+                    b.HasOne("SecretSantaTelegramBot.Data.Game", "Game")
                         .WithMany("Participants")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SecretSantaTelegramBot.Data.SecretSantaUser", "User")
+                    b.HasOne("SecretSantaTelegramBot.Data.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -156,7 +157,7 @@ namespace SecretSantaTelegramBot.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SecretSantaTelegramBot.Data.SecretSantaGame", b =>
+            modelBuilder.Entity("SecretSantaTelegramBot.Data.Game", b =>
                 {
                     b.Navigation("Draws");
 

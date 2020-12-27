@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -12,13 +13,13 @@ namespace SecretSantaTelegramBot.Data
         public int Id { get; set; }
 
         [JsonIgnore]
-        public Game Game { get; set; }
+        public SecretSantaGame Game { get; set; }
 
         [ForeignKey(nameof(Game))]
         public int GameId { get; set; }
 
         [JsonIgnore]
-        public User GivingUser { get; set; }
+        public SecretSantaUser GivingUser { get; set; }
 
         [ForeignKey(nameof(GivingUser))]
         public int GivingUserId { get; set; }
