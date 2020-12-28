@@ -48,7 +48,7 @@ namespace SecretSantaTelegramBot.Services
             new StartCommand(),
             new PlayCommand(),
             new StickerCommand(),
-            new PhotoCommand()
+            new PhotoCommand(_botConfiguration.ImagePath)
         };
     }
 }
