@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Telegram.Bot.Types;
 
 namespace SecretSantaTelegramBot
 {
@@ -20,25 +21,27 @@ namespace SecretSantaTelegramBot
             Database.Migrate();
         }
 
-        public async Task<SecretSantaUser> CreateOrUpdateUser(Telegram.Bot.Types.User telegramUser)
+        public async Task<SecretSantaUser> CreateOrUpdateUser(Message message)
         {
-            var secretSantaUser = Users.SingleOrDefault(u => u.Id == telegramUser.Id);
+            var secretSantaUser = Users.SingleOrDefault(u => u.Id == message.From.Id);
 
-            if (telegramUser is not null)
+            if (secretSantaUser is not null)
             {
-                secretSantaUser.FirstName = telegramUser.FirstName;
-                secretSantaUser.LastName = telegramUser.LastName;
-                secretSantaUser.Username = telegramUser.Username;
+                secretSantaUser.ChartId = message.Chat.Id;
+                secretSantaUser.FirstName = message.From.FirstName;
+                secretSantaUser.LastName = message.From.LastName;
+                secretSantaUser.Username = message.From.Username;
                 secretSantaUser.ModifiedDate = DateTime.Now;
             }
             else
             {
                 secretSantaUser = new SecretSantaUser
                 {
-                    Id = telegramUser.Id,
-                    FirstName = telegramUser.FirstName,
-                    LastName = telegramUser.LastName,
-                    Username = telegramUser.Username,
+                    Id = message.From.Id,
+                    ChartId = message.Chat.Id,
+                    FirstName = message.From.FirstName,
+                    LastName = message.From.LastName,
+                    Username = message.From.Username,
                     CreatedDate = DateTime.Now,
                     ModifiedDate = DateTime.Now
                 };

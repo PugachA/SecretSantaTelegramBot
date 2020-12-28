@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,15 @@ namespace SecretSantaTelegramBot.Services
     {
         private readonly ILogger<NotificationService> _logger;
         private readonly SecretSantaContext _secretSantaContext;
+        private readonly ITelegramBotService _telegramBotService;
         private Timer timer;
+
+        public NotificationService(SecretSantaContext secretSantaContext, ITelegramBotService telegramBotService, ILogger<NotificationService> logger)
+        {
+            _logger = logger;
+            _secretSantaContext = secretSantaContext;
+            _telegramBotService = telegramBotService;
+        }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
@@ -24,7 +33,7 @@ namespace SecretSantaTelegramBot.Services
                     DoWork,
                     null,
                     TimeSpan.Zero,
-                    TimeSpan.FromMilliseconds(900));
+                    TimeSpan.FromMilliseconds(10000));
             }
             catch (Exception ex)
             {
@@ -36,6 +45,31 @@ namespace SecretSantaTelegramBot.Services
         {
             try
             {
+                var notifications = _secretSantaContext.Notifications
+                    .Include(n => n.Game)
+                    .Include(n => n.Game.Participants)
+                    .Where(n => n.NotificationDate <= DateTime.Now && n.IsNotified == false && DateTime.Now < n.Game.EndDate);
+
+                foreach (var notification in notifications)
+                {
+                    var users = await _secretSantaContext.Participants
+                        .Include(p => p.User)
+                        .Where(p => p.GameId == notification.GameId)
+                        .Select(p => p.User)
+                        .ToListAsync();
+
+                    foreach (var user in users)
+                    {
+                        var remainingTime = notification.Game.EndDate - DateTime.Now;
+                        await _telegramBotService.TelegramBotClient.SendTextMessageAsync(user.Id, $"Хо хо хо, пишу напомнить," +
+                            $" что до тайной жеребьевки осталось {remainingTime.Days}д. {remainingTime.Hours}ч. {remainingTime.Minutes}мин 🎅🏻 " +
+                            $"Надеюсь ты успел подготовить подарок🎁");
+                    }
+
+                    notification.IsNotified = true;
+                }
+
+                await _secretSantaContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {

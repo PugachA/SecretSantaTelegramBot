@@ -15,9 +15,11 @@ namespace SecretSantaTelegramBot.Data
         public string Name { get; set; }
 
         [Required]
+        [JsonConverter(typeof(DateTimeConverterUsingDateTimeParse))]
         public DateTime StartDate { get; set; }
 
         [Required]
+        [JsonConverter(typeof(DateTimeConverterUsingDateTimeParse))]
         public DateTime EndDate { get; set; }
 
         [Required]

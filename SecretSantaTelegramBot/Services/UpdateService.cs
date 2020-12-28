@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types;
@@ -12,12 +13,18 @@ namespace SecretSantaTelegramBot.Services
         private readonly ITelegramBotService _botService;
         private readonly SecretSantaContext _secretSantaContext;
         private readonly ILogger<UpdateService> _logger;
+        private readonly CancellationToken _cancellationToken;
+        private readonly NotificationService _notificationService;
 
-        public UpdateService(ITelegramBotService botService, ILogger<UpdateService> logger, SecretSantaContext secretSantaContext)
+        public UpdateService(ITelegramBotService botService, NotificationService notificationService, ILogger<UpdateService> logger, SecretSantaContext secretSantaContext)
         {
             _botService = botService;
             _logger = logger;
             _secretSantaContext = secretSantaContext;
+
+            _notificationService = notificationService;
+            _cancellationToken = new CancellationToken();
+            _notificationService.StartAsync(_cancellationToken);
         }
 
         public async Task GenerateAnswerAsync(Update update)
@@ -38,23 +45,12 @@ namespace SecretSantaTelegramBot.Services
             }
 
             await command.Execute(message, _botService.TelegramBotClient, _secretSantaContext);
+        }
 
-            //switch (message.Type)
-            //{
-            //    case MessageType.Photo:
-            //        // Download Photo
-            //        var fileId = message.Photo.LastOrDefault()?.FileId;
-            //        var file = await _botService.TelegramBotClient.GetFileAsync(fileId);
-
-            //        var filename = file.FileId + "." + file.FilePath.Split('.').Last();
-            //        using (var saveImageStream = System.IO.File.Open(filename, FileMode.Create))
-            //        {
-            //            await _botService.TelegramBotClient.DownloadFileAsync(file.FilePath, saveImageStream);
-            //        }
-
-            //        await _botService.TelegramBotClient.SendTextMessageAsync(message.Chat.Id, "Thx for the Pics");
-            //        break;
-            //}
+        public void Dispose()
+        {
+            _notificationService?.StopAsync(_cancellationToken);
+            _notificationService?.Dispose();
         }
     }
 }

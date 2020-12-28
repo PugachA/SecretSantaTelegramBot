@@ -22,7 +22,7 @@ namespace SecretSantaTelegramBot.Models.Commands
 
         public async Task Execute(Message message, TelegramBotClient botClient, SecretSantaContext secretSantaContext)
         {
-            var secretSantaUser = await secretSantaContext.CreateOrUpdateUser(message.From);
+            var secretSantaUser = await secretSantaContext.CreateOrUpdateUser(message);
 
             var secretSantaGame = secretSantaContext.Games.FirstOrDefault(g => g.IsEnded == false && g.StartDate <= DateTime.Now && g.EndDate > DateTime.Now);
 

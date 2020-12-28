@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Ngrok.AspNetCore;
 using SecretSantaTelegramBot.Services;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -17,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Ngrok.AspNetCore;
 
 namespace SecretSantaTelegramBot
 {
@@ -32,14 +32,15 @@ namespace SecretSantaTelegramBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IUpdateService, UpdateService>();
+            services.AddControllers().AddNewtonsoftJson();
+
+            services.AddSingleton<IUpdateService, UpdateService>();
             services.AddSingleton<ITelegramBotService, TelegramBotService>();
             services.AddSingleton<IEncryptor, EncryptorService>();
             services.Configure<BotConfiguration>(Configuration.GetSection("BotConfiguration"));
             services.Configure<ThumbprintCertificateInfo>(Configuration.GetSection("ThumbprintCertificateInfo"));
+            services.AddSingleton<NotificationService>();
             services.AddNgrok();
-
-            services.AddControllers().AddNewtonsoftJson();
 
             services.AddDbContext<SecretSantaContext>(
                     options => options.UseSqlServer(

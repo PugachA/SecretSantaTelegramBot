@@ -23,7 +23,7 @@ namespace SecretSantaTelegramBot.Models.Commands
 
         public async Task Execute(Message message, TelegramBotClient botClient, SecretSantaContext secretSantaContext)
         {
-            await secretSantaContext.CreateOrUpdateUser(message.From);
+            await secretSantaContext.CreateOrUpdateUser(message);
 
             var chatId = message.Chat.Id;
             await botClient.SendTextMessageAsync(chatId, "Привет! 🥳\r\n" +
