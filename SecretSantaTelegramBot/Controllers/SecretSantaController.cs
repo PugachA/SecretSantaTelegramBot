@@ -39,6 +39,7 @@ namespace SecretSantaTelegramBot.Controllers
                 var hourToDrawDatetime = game.EndDate.AddHours(-1);
                 var sixHoursToDrawDatetime = game.EndDate.AddHours(-6);
                 var twelveHoursToDrawDatetime = game.EndDate.AddHours(-12);
+                var dayHalfToDrawDatetime = game.EndDate.AddHours(-36);
                 var notifications = new List<Notification>();
 
                 if (hourToDrawDatetime >= game.StartDate)
@@ -49,6 +50,9 @@ namespace SecretSantaTelegramBot.Controllers
 
                 if (twelveHoursToDrawDatetime >= game.StartDate)
                     notifications.Add(new Notification { GameId = game.Id, NotificationDate = twelveHoursToDrawDatetime });
+
+                if (dayHalfToDrawDatetime >= game.StartDate)
+                    notifications.Add(new Notification { GameId = game.Id, NotificationDate = dayHalfToDrawDatetime });
 
                 await _secretSantaContext.Notifications.AddRangeAsync(notifications);
                 await _secretSantaContext.SaveChangesAsync();

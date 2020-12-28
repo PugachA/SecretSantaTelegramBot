@@ -24,6 +24,6 @@ namespace SecretSantaTelegramBot.Data
         [ForeignKey(nameof(GivingUser))]
         public int GivingUserId { get; set; }
 
-        public int RecievingUserId { get; set; }
+        public int? RecievingUserId { get; set; }
     }
 }

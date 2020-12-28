@@ -40,6 +40,7 @@ namespace SecretSantaTelegramBot
             services.Configure<BotConfiguration>(Configuration.GetSection("BotConfiguration"));
             services.Configure<ThumbprintCertificateInfo>(Configuration.GetSection("ThumbprintCertificateInfo"));
             services.AddSingleton<NotificationService>();
+            services.AddSingleton<DrawService>();
             services.AddNgrok();
 
             services.AddDbContext<SecretSantaContext>(

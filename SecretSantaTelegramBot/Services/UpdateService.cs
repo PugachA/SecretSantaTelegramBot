@@ -15,16 +15,20 @@ namespace SecretSantaTelegramBot.Services
         private readonly ILogger<UpdateService> _logger;
         private readonly CancellationToken _cancellationToken;
         private readonly NotificationService _notificationService;
+        private readonly DrawService _drawService;
 
-        public UpdateService(ITelegramBotService botService, NotificationService notificationService, ILogger<UpdateService> logger, SecretSantaContext secretSantaContext)
+        public UpdateService(ITelegramBotService botService, NotificationService notificationService, DrawService drawService, ILogger<UpdateService> logger, SecretSantaContext secretSantaContext)
         {
             _botService = botService;
             _logger = logger;
             _secretSantaContext = secretSantaContext;
 
             _notificationService = notificationService;
+            _drawService = drawService;
+
             _cancellationToken = new CancellationToken();
             _notificationService.StartAsync(_cancellationToken);
+            _drawService.StartAsync(_cancellationToken);
         }
 
         public async Task GenerateAnswerAsync(Update update)
@@ -50,7 +54,10 @@ namespace SecretSantaTelegramBot.Services
         public void Dispose()
         {
             _notificationService?.StopAsync(_cancellationToken);
+            _drawService?.StopAsync(_cancellationToken);
+
             _notificationService?.Dispose();
+            _drawService?.Dispose();
         }
     }
 }

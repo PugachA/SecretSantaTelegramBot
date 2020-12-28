@@ -33,7 +33,7 @@ namespace SecretSantaTelegramBot.Services
                     DoWork,
                     null,
                     TimeSpan.Zero,
-                    TimeSpan.FromMilliseconds(10000));
+                    TimeSpan.FromMilliseconds(600));
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace SecretSantaTelegramBot.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при получении команд на обработку");
+                _logger.LogError(ex, "Error while sending notification");
             }
         }
 
