@@ -46,23 +46,15 @@ namespace SecretSantaTelegramBot
             services.AddSingleton<NotificationService>();
             services.AddSingleton<DrawService>();
 
-            services.AddNgrok();
+            if (Enviroment.IsDevelopment())
+                services.AddNgrok();
 
             if (Enviroment.IsProduction())
-            {
                 services.AddNgrok(options =>
                 {
-                    options.Disable = false;
-                    options.DetectUrl = true;
-                    options.ManageNgrokProcess = true;
-                    options.DownloadNgrok = true;
-                    options.ProcessStartTimeoutMs = 5000;
-                    options.RedirectLogs = true;
-                    options.NgrokConfigProfile = null;
-                    options.ApplicationHttpUrl = null;
-                    options.NgrokPath = null;
+                    options.DetectUrl = false;
+                    options.ApplicationHttpUrl = "http://localhost:80";
                 });
-            }
 
             services.AddDbContext<SecretSantaContext>(
                     options => options.UseSqlServer(

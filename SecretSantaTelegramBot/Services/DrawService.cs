@@ -35,7 +35,7 @@ namespace SecretSantaTelegramBot.Services
                     DoWork,
                     null,
                     TimeSpan.Zero,
-                    TimeSpan.FromMilliseconds(1000000));
+                    TimeSpan.FromMilliseconds(1000));
             }
             catch (Exception ex)
             {
