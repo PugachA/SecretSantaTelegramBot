@@ -36,6 +36,23 @@ namespace SecretSantaTelegramBot.Controllers
                 await _secretSantaContext.AddAsync(game);
                 await _secretSantaContext.SaveChangesAsync();
 
+                var hourToDrawDatetime = game.EndDate.AddHours(-1);
+                var sixHoursToDrawDatetime = game.EndDate.AddHours(-6);
+                var twelveHoursToDrawDatetime = game.EndDate.AddHours(-12);
+                var notifications = new List<Notification>();
+
+                if (hourToDrawDatetime >= game.StartDate)
+                    notifications.Add(new Notification { GameId = game.Id, NotificationDate = hourToDrawDatetime });
+
+                if (sixHoursToDrawDatetime >= game.StartDate)
+                    notifications.Add(new Notification { GameId = game.Id, NotificationDate = sixHoursToDrawDatetime });
+
+                if (twelveHoursToDrawDatetime >= game.StartDate)
+                    notifications.Add(new Notification { GameId = game.Id, NotificationDate = twelveHoursToDrawDatetime });
+
+                await _secretSantaContext.Notifications.AddRangeAsync(notifications);
+                await _secretSantaContext.SaveChangesAsync();
+
                 return Ok();
             }
             catch (Exception ex)
