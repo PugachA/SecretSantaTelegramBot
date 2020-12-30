@@ -55,6 +55,9 @@ namespace SecretSantaTelegramBot.Services
 
                 foreach (var game in games)
                 {
+                    game.IsEnded = true;
+                    await _secretSantaContext.SaveChangesAsync();
+
                     var userIds = await _secretSantaContext.Participants
                         .Include(p => p.User)
                         .Where(p => p.GameId == game.Id)
@@ -80,6 +83,8 @@ namespace SecretSantaTelegramBot.Services
                             userIds.Remove(Id);
                     }
 
+                    _logger.LogInformation($"Draw is end. Starting send notifications");
+
                     //Делаем нотификации и записываем в БД
                     foreach (var drawResult in drawDictionary)
                     {
@@ -103,10 +108,9 @@ namespace SecretSantaTelegramBot.Services
 
                         await _telegramBotService.TelegramBotClient.SendTextMessageAsync(givingUser.Id, $"Держи красивую елочку");
                         await _telegramBotService.TelegramBotClient.SendStickerAsync(givingUser.Id, "CAACAgIAAxkBAAPjX-j5xWNkZxZS0weMA9eItKCQNncAArUBAAIw1J0RU4pzFgFgbjEeBA");
-                    }
 
-                    game.IsEnded = true;
-                    await _secretSantaContext.SaveChangesAsync();
+                        _logger.LogInformation($"Sending draw result of game '{game.Id}' to user {givingUser.Id} '{givingUser.LastName} {givingUser.FirstName}'");
+                    }
                 }
             }
             catch (Exception ex)

@@ -33,7 +33,7 @@ namespace SecretSantaTelegramBot.Services
                     DoWork,
                     null,
                     TimeSpan.Zero,
-                    TimeSpan.FromMilliseconds(600));
+                    TimeSpan.FromMilliseconds(700));
             }
             catch (Exception ex)
             {
@@ -52,6 +52,9 @@ namespace SecretSantaTelegramBot.Services
 
                 foreach (var notification in notifications)
                 {
+                    notification.IsNotified = true;
+                    await _secretSantaContext.SaveChangesAsync();
+
                     var users = await _secretSantaContext.Participants
                         .Include(p => p.User)
                         .Where(p => p.GameId == notification.GameId)
@@ -64,12 +67,10 @@ namespace SecretSantaTelegramBot.Services
                         await _telegramBotService.TelegramBotClient.SendTextMessageAsync(user.Id, $"Хо хо хо, пишу напомнить," +
                             $" что до тайной жеребьевки осталось {remainingTime.Days}д. {remainingTime.Hours}ч. {remainingTime.Minutes}мин 🎅🏻 " +
                             $"Надеюсь ты успел подготовить подарок🎁");
+                        
+                        _logger.LogInformation($"Send notification {notification.Id} to user {user.Id} '{user.LastName} {user.FirstName}'");
                     }
-
-                    notification.IsNotified = true;
                 }
-
-                await _secretSantaContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
