@@ -10,7 +10,7 @@ namespace SecretSantaTelegramBot.Models.Commands
 {
     public class PlayCommand : ICommand
     {
-        public string Name => "Играть в Тайного Санту".ToLower();
+        public string Name => @"/play";
 
         public bool Contains(Message message)
         {
